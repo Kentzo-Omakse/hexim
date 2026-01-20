@@ -1,0 +1,62 @@
+{% block zen_product_features %}
+    {# ... @zenit - custom fields
+    ... required here again because of the placement of the CMS buy-box element on landings, listings and shop page layouts. #}
+    {% set zenCustomFields = {
+        product: product.translated.customFields|default(page.product.translated.customFields)
+    } %}
+
+    {% if theme_config('zen-product-details-features')|default(false) is not same as (false) %}
+        {% if zenCustomFields.product.zenit_gravity_features %}
+            {% set featuresList = zenCustomFields.product.zenit_gravity_features|trim|trim(';')|split(';') %}
+            {% set featuresIcon = theme_config('zen-product-details-features-icon')|default('checkmark') %}
+            {% set featuresStyle = theme_config('zen-product-details-features-style')|default('standard') %}
+
+            {% if featuresStyle == 'standard' %}
+                {% set listClasses =  'list-group list-group-flush' %}
+            {% else %}
+                {% set listClasses =  'list-unstyled' %}
+            {% endif %}
+
+            {% if featuresStyle == 'standard' %}
+                {% set listItemClasses =  'list-group-item bg-transparent' %}
+            {% else %}
+                {% set listItemClasses =  'list-item' %}
+            {% endif %}
+
+            <div class="product-detail-features mt-4 mb-4">
+                {% if theme_config('zen-product-details-features-headline') %}
+                    <div class="product-detail-features-headline h4">{{ 'zentheme.detail.features'|trans }}</div>
+                {% endif %}
+
+                {% block zen_product_features_items %}
+                    <ul class="{{ listClasses }}">
+                        {% for feature in featuresList %}
+                            {% block zen_product_features_item %}
+                                <li class="{{ listItemClasses }}">
+                                    {% block zen_product_features_item_icon %}
+                                        {% if featuresIcon == 'arrow-medium-right'
+                                            or featuresIcon == 'arrow-large-right'
+                                            or featuresIcon == 'medium-double-right'
+                                            or featuresIcon == 'arrow-large-double-right'
+                                            or featuresIcon == 'arrow-medium-double-right'
+                                            or featuresIcon == 'plus' %}
+                                            {% sw_include '@Storefront/storefront/utilities/icon.html.twig' with { name: featuresIcon, pack: 'solid', class: 'sm me-3 feature-icon', ariaHidden: 'true' } %}
+                                        {% else %}
+                                            {% sw_include '@Storefront/storefront/utilities/icon.html.twig' with { name: featuresIcon, class: 'sm me-3 feature-icon', ariaHidden: 'true' } %}
+                                        {% endif %}
+                                    {% endblock %}
+
+                                    {% block zen_product_features_item_text %}
+                                        <span class="feature-text">
+                                           {{ feature }}
+                                        </span>
+                                    {% endblock %}
+                                </li>
+                            {% endblock %}
+                        {% endfor %}
+                    </ul>
+                {% endblock %}
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
